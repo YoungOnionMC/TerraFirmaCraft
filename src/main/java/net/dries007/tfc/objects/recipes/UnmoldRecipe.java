@@ -137,7 +137,7 @@ public class UnmoldRecipe extends IForgeRegistryEntry.Impl<IRecipe> implements I
             if (moldCap instanceof IMoldHandler)
             {
                 IMoldHandler moldHandler = (IMoldHandler) moldCap;
-                if (!moldHandler.isMolten() && moldHandler.getAmount() == 100)
+                if (!moldHandler.isMolten() && moldHandler.getAmount() == moldHandler.getMaxCapabilityAmount())
                 {
                     return getOutputItem(moldHandler);
                 }

@@ -32,7 +32,7 @@ public class UnmoldRecipeWrapper implements IRecipeWrapper
         IFluidHandler cap = mold.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, null);
         if (cap instanceof IMoldHandler)
         {
-            cap.fill(new FluidStack(FluidsTFC.getFluidFromMetal(metal), 100), true);
+            cap.fill(new FluidStack(FluidsTFC.getFluidFromMetal(metal), ((IMoldHandler) cap).getMaxCapabilityAmount()), true);
         }
         output = new ItemStack(ItemMetal.get(metal, type));
     }

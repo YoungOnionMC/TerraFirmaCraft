@@ -504,14 +504,14 @@ public final class DefaultRecipes
 
         // Blooms
         r.register(new AnvilRecipeMeasurable(new ResourceLocation(MOD_ID, "refining_bloom"), IIngredient.of(ItemsTFC.UNREFINED_BLOOM), new ItemStack(ItemsTFC.REFINED_BLOOM), Metal.Tier.TIER_II, HIT_LAST, HIT_SECOND_LAST, HIT_THIRD_LAST));
-        r.register(new AnvilRecipeSplitting(new ResourceLocation(MOD_ID, "splitting_bloom"), IIngredient.of(ItemsTFC.REFINED_BLOOM), new ItemStack(ItemsTFC.REFINED_BLOOM), 100, Metal.Tier.TIER_II, PUNCH_LAST));
+        r.register(new AnvilRecipeSplitting(new ResourceLocation(MOD_ID, "splitting_bloom"), IIngredient.of(ItemsTFC.REFINED_BLOOM), new ItemStack(ItemsTFC.REFINED_BLOOM), 144, Metal.Tier.TIER_II, PUNCH_LAST));
         r.register(new AnvilRecipe(new ResourceLocation(MOD_ID, "iron_bloom"), x -> {
             if (x.getItem() == ItemsTFC.REFINED_BLOOM)
             {
                 IForgeable cap = x.getCapability(CapabilityForgeable.FORGEABLE_CAPABILITY, null);
                 if (cap instanceof IForgeableMeasurableMetal)
                 {
-                    return ((IForgeableMeasurableMetal) cap).getMetal() == Metal.WROUGHT_IRON && ((IForgeableMeasurableMetal) cap).getMetalAmount() == 100;
+                    return ((IForgeableMeasurableMetal) cap).getMetal() == Metal.WROUGHT_IRON && ((IForgeableMeasurableMetal) cap).getMetalAmount() == 144;
                 }
             }
             return false;

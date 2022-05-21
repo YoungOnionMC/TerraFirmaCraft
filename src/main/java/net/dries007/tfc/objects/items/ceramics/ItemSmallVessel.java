@@ -322,7 +322,7 @@ public class ItemSmallVessel extends ItemPottery
                             if (key != null)
                             {
                                 int metalAmount = entry.getValue();
-                                text.add(textPosition, I18n.format(TerraFirmaCraft.MOD_ID + ".tooltip.small_vessel_unit_total", I18n.format(key.getTranslationKey()), metalAmount, Math.round((float) metalAmount / totalAmount * 1000) / 10f));
+                                text.add(textPosition, I18n.format(TerraFirmaCraft.MOD_ID + ".tooltip.small_vessel_unit_total", I18n.format(key.getTranslationKey()), metalAmount, Math.round((float) metalAmount / totalAmount * 1000) / 5f));
                             }
                         }
                         text.add(textPosition, ""); // Separator between the contents of the vessel and the above units text, not needed but I feel that it helps visually
@@ -347,6 +347,11 @@ public class ItemSmallVessel extends ItemPottery
         public int getAmount()
         {
             return fluidMode ? tank.getFluidAmount() : 0;
+        }
+
+        @Override
+        public int getMaxCapabilityAmount() {
+            return ConfigTFC.Devices.SMALL_VESSEL.tank;
         }
 
         @Override

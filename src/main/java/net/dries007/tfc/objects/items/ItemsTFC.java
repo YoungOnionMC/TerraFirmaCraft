@@ -287,7 +287,7 @@ public final class ItemsTFC
                 if (type.hasMold(null))
                 {
                     // Not using registerPottery here because the ItemMold uses a custom ItemModelMesher, meaning it can't be in simpleItems
-                    ItemPottery item = new ItemMold(type);
+                    ItemPottery item = new ItemMold(type, type.getSmeltAmount());
                     register(r, "ceramics/fired/mold/" + type.name().toLowerCase(), item, CT_POTTERY);
                     simpleItems.add(register(r, "ceramics/unfired/mold/" + type.name().toLowerCase(), new ItemUnfiredMold(type), CT_POTTERY));
                 }

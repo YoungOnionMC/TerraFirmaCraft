@@ -37,4 +37,11 @@ public interface IMoldHandler extends IFluidHandler, INBTSerializable<NBTTagComp
      */
     int getAmount();
 
+    /**
+     * Gets the maximum amount of metal the mold can hold.
+     *
+     * @return The maxmimum amount of metal this mold can hold, in mB / units
+     */
+    int getMaxCapabilityAmount();
+
 }

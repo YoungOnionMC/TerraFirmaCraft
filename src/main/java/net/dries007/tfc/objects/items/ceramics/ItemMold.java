@@ -60,10 +60,12 @@ public class ItemMold extends ItemPottery
     }
 
     private final Metal.ItemType type;
+    private final int maxFluidCapacity;
 
-    public ItemMold(Metal.ItemType type)
+    public ItemMold(Metal.ItemType type, int maxFluidCapacity)
     {
         this.type = type;
+        this.maxFluidCapacity = maxFluidCapacity;
         if (MAP.put(type, this) != null)
         {
             throw new IllegalStateException("There can only be one.");
@@ -153,7 +155,7 @@ public class ItemMold extends ItemPottery
     @Override
     public ICapabilityProvider initCapabilities(ItemStack stack, @Nullable NBTTagCompound nbt)
     {
-        return new FilledMoldCapability(nbt);
+        return new FilledMoldCapability(nbt, maxFluidCapacity);
     }
 
     @Override
@@ -168,10 +170,12 @@ public class ItemMold extends ItemPottery
     {
         private final FluidTank tank;
         private IFluidTankProperties[] fluidTankProperties;
+        private int fluidTankCapacity;
 
-        FilledMoldCapability(@Nullable NBTTagCompound nbt)
+        FilledMoldCapability(@Nullable NBTTagCompound nbt, int fluidTankCapacity)
         {
-            tank = new FluidTank(100);
+            this.fluidTankCapacity = fluidTankCapacity;
+            tank = new FluidTank(fluidTankCapacity);
 
             if (nbt != null)
             {
@@ -190,6 +194,11 @@ public class ItemMold extends ItemPottery
         public int getAmount()
         {
             return tank.getFluidAmount();
+        }
+
+        @Override
+        public int getMaxCapabilityAmount() {
+            return fluidTankCapacity;
         }
 
         @Override
