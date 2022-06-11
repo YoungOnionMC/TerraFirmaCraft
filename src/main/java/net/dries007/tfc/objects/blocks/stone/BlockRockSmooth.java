@@ -26,7 +26,7 @@ public class BlockRockSmooth extends BlockRockVariant
         super(type, rock);
 
         FallingBlockManager.Specification spec = new FallingBlockManager.Specification(type.getFallingSpecification()); // Copy as each raw stone has an unique resultingState
-        FallingBlockManager.registerFallable(this.getDefaultState().withProperty(CAN_FALL, true), spec);
+        FallingBlockManager.TFCDefaultSupportFallablePair.registerFallable(this.getDefaultState().withProperty(CAN_FALL, true), spec);
 
         setDefaultState(getBlockState().getBaseState().withProperty(CAN_FALL, false));
     }

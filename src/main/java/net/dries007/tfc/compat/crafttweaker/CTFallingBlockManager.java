@@ -39,88 +39,108 @@ import static net.dries007.tfc.api.util.FallingBlockManager.getSpecification;
 public class CTFallingBlockManager
 {
 
-    @ZenMethod
-    public static void registerFallable(IBlockState state, CTSpecification ctSpecification)
-    {
-        FallingBlockManager.registerFallable((net.minecraft.block.state.IBlockState) state.getInternal(), ctSpecification.internalSpec);
-    }
 
-    @ZenMethod
-    public static void registerFallable(IBlockState state, IBlockState existingState)
-    {
-        Specification existingSpec = getSpecification((net.minecraft.block.state.IBlockState) existingState.getInternal());
-        if (existingSpec == null)
-        {
-            throw new IllegalArgumentException(existingState + " is not in the current specification definitions.");
+
+    @ZenRegister
+    @ZenClass("mods.terrafirmacraft.fallingblock.SupportFallablePair")
+    public static class CTSupportFallablePair {
+        @ZenMethod
+        public CTSupportFallablePair create(String name) {
+            return new CTSupportFallablePair(name);
         }
-        FallingBlockManager.registerFallable((net.minecraft.block.state.IBlockState) state.getInternal(), existingSpec);
-    }
 
-    @ZenMethod
-    public static void registerFallable(IBlockDefinition block, CTSpecification ctSpecification)
-    {
-        FallingBlockManager.registerFallable((Block) block.getInternal(), ctSpecification.internalSpec);
-    }
-
-    @ZenMethod
-    public static void registerFallable(IBlockDefinition block, IBlockState existingState)
-    {
-        Specification existingSpec = getSpecification((net.minecraft.block.state.IBlockState) existingState.getInternal());
-        if (existingSpec == null)
+        @ZenMethod
+        public void registerFallable(IBlockState state, CTSpecification ctSpecification)
         {
-            throw new IllegalArgumentException(existingState + " is not in the current specification definitions.");
+            internal.registerFallable((net.minecraft.block.state.IBlockState) state.getInternal(), ctSpecification.internalSpec);
         }
-        FallingBlockManager.registerFallable((Block) block.getInternal(), existingSpec);
-    }
 
-    @ZenMethod
-    public static void registerFallable(String blockId, CTSpecification ctSpecification)
-    {
-        Block block = ForgeRegistries.BLOCKS.getValue(new ResourceLocation(blockId));
-        if (block == null)
+        @ZenMethod
+        public void registerFallable(IBlockState state, IBlockState existingState)
         {
-            throw new IllegalArgumentException(blockId + " is not a valid Block.");
+            Specification existingSpec = getSpecification((net.minecraft.block.state.IBlockState) existingState.getInternal());
+            if (existingSpec == null)
+            {
+                throw new IllegalArgumentException(existingState + " is not in the current specification definitions.");
+            }
+            internal.registerFallable((net.minecraft.block.state.IBlockState) state.getInternal(), existingSpec);
         }
-        FallingBlockManager.registerFallable(block, ctSpecification.internalSpec);
-    }
 
-    @ZenMethod
-    public static void registerFallable(String blockId, IBlockState existingState)
-    {
-        Block block = ForgeRegistries.BLOCKS.getValue(new ResourceLocation(blockId));
-        if (block == null)
+        @ZenMethod
+        public void registerFallable(IBlockDefinition block, CTSpecification ctSpecification)
         {
-            throw new IllegalArgumentException(blockId + " is not a valid Block.");
+            internal.registerFallable((Block) block.getInternal(), ctSpecification.internalSpec);
         }
-        Specification existingSpec = getSpecification((net.minecraft.block.state.IBlockState) existingState.getInternal());
-        if (existingSpec == null)
+
+        @ZenMethod
+        public void registerFallable(IBlockDefinition block, IBlockState existingState)
         {
-            throw new IllegalArgumentException(existingState + " is not in the current specification definitions.");
+            Specification existingSpec = getSpecification((net.minecraft.block.state.IBlockState) existingState.getInternal());
+            if (existingSpec == null)
+            {
+                throw new IllegalArgumentException(existingState + " is not in the current specification definitions.");
+            }
+            internal.registerFallable((Block) block.getInternal(), existingSpec);
         }
-        FallingBlockManager.registerFallable(block, existingSpec);
-    }
 
-    @ZenMethod
-    public static void registerSideSupport(IBlockState state)
-    {
-        FallingBlockManager.registerSideSupports((net.minecraft.block.state.IBlockState) state.getInternal());
-    }
-
-    @ZenMethod
-    public static void registerSideSupport(IBlockDefinition block)
-    {
-        FallingBlockManager.registerSideSupports((Block) block.getInternal());
-    }
-
-    @ZenMethod
-    public static void registerSideSupport(String blockId)
-    {
-        Block block = ForgeRegistries.BLOCKS.getValue(new ResourceLocation(blockId));
-        if (block == null)
+        @ZenMethod
+        public void registerFallable(String blockId, CTSpecification ctSpecification)
         {
-            throw new IllegalArgumentException(blockId + " is not a valid Block.");
+            Block block = ForgeRegistries.BLOCKS.getValue(new ResourceLocation(blockId));
+            if (block == null)
+            {
+                throw new IllegalArgumentException(blockId + " is not a valid Block.");
+            }
+            internal.registerFallable(block, ctSpecification.internalSpec);
         }
-        FallingBlockManager.registerSideSupports(block);
+
+        @ZenMethod
+        public void registerFallable(String blockId, IBlockState existingState)
+        {
+            Block block = ForgeRegistries.BLOCKS.getValue(new ResourceLocation(blockId));
+            if (block == null)
+            {
+                throw new IllegalArgumentException(blockId + " is not a valid Block.");
+            }
+            Specification existingSpec = getSpecification((net.minecraft.block.state.IBlockState) existingState.getInternal());
+            if (existingSpec == null)
+            {
+                throw new IllegalArgumentException(existingState + " is not in the current specification definitions.");
+            }
+            internal.registerFallable(block, existingSpec);
+        }
+
+        @ZenMethod
+        public void registerSideSupport(IBlockState state)
+        {
+            internal.registerSideSupports((net.minecraft.block.state.IBlockState) state.getInternal());
+        }
+
+        @ZenMethod
+        public void registerSideSupport(IBlockDefinition block)
+        {
+            internal.registerSideSupports((Block) block.getInternal());
+        }
+
+        @ZenMethod
+        public void registerSideSupport(String blockId)
+        {
+            Block block = ForgeRegistries.BLOCKS.getValue(new ResourceLocation(blockId));
+            if (block == null)
+            {
+                throw new IllegalArgumentException(blockId + " is not a valid Block.");
+            }
+            internal.registerSideSupports(block);
+        }
+
+        final FallingBlockManager.SupportFallablesPair internal;
+        CTSupportFallablePair(FallingBlockManager.SupportFallablesPair sfp) {this.internal = sfp;}
+
+        CTSupportFallablePair(String name) {
+            this.internal = new FallingBlockManager.SupportFallablesPair(name);
+        }
+
+
     }
 
     @ZenRegister

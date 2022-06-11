@@ -41,7 +41,7 @@ import net.dries007.tfc.objects.entity.EntityFallingBlockTFC;
 
 public class FallingBlockManager
 {
-    public class SupportFallablesPair {
+    public static class SupportFallablesPair {
         private String SupportFallableName;
 
         public SupportFallablesPair() {
@@ -53,8 +53,8 @@ public class FallingBlockManager
         }
 
 
-        private Set<Material> SoftMaterials;
-        private Set<Material> HardMaterials;
+        private Set<Material> SoftMaterials = new HashSet<>();
+        private Set<Material> HardMaterials = new HashSet<>();
 
         private Map<IBlockState, Specification> Fallables = new Object2ObjectOpenHashMap<>();
         private Set<IBlockState> SideSupports = new ObjectOpenHashSet<>(0);
@@ -80,12 +80,22 @@ public class FallingBlockManager
             SideSupports.addAll(block.getBlockState().getValidStates());
         }
 
-        public Specification getFallableSpecification(IBlockState state) {return Fallables.get(state);}
-
+        public Specification getFallableSpecification(IBlockState state) { return Fallables.get(state);}
 
     }
 
-    private static Set<SupportFallablesPair> FallableRegistry;
+    private static Set<SupportFallablesPair> FallableRegistry = new HashSet<>();
+    public static SupportFallablesPair TFCDefaultSupportFallablePair = new SupportFallablesPair("DefaultSupport");
+    public static SupportFallablesPair TtestPair = new SupportFallablesPair("treeshit");
+
+    static {
+        addSupportFallablePairToRegistry(TFCDefaultSupportFallablePair);
+        addSupportFallablePairToRegistry(TtestPair);
+    }
+
+    public static void addSupportFallablePairToRegistry(SupportFallablesPair supportFallablesPair) {
+        FallableRegistry.add(supportFallablesPair);
+    }
 
     //private static final Set<Material> SOFT_MATERIALS = new ObjectOpenHashSet<>(new Material[] { Material.GROUND, Material.SAND, Material.GRASS, Material.CLAY });
     //private static final Set<Material> HARD_MATERIALS = new ObjectOpenHashSet<>(new Material[] { Material.IRON, BlockCharcoalPile.CHARCOAL_MATERIAL });
@@ -157,13 +167,18 @@ public class FallingBlockManager
     {
         block.getBlockState().getValidStates().forEach(SIDE_SUPPORTS::remove);
     }
-
+    */
     @Nullable
     public static Specification getSpecification(IBlockState state)
     {
-        return FALLABLES.get(state);
+        Specification result = null;
+        for(FallingBlockManager.SupportFallablesPair supportSet : FallableRegistry) {
+            if(result != null || supportSet.getFallableSpecification(state) != null)
+               result = supportSet.getFallableSpecification(state);
+        }
+        return result;
     }
-    */
+
 
 
     public static boolean canFallThrough(World world, BlockPos pos, Material fallingBlockMaterial)
@@ -173,24 +188,25 @@ public class FallingBlockManager
 
     public static boolean canFallThrough(World world, BlockPos pos, Material fallableMaterial, IBlockState targetState)
     {
-        if (BlockFalling.canFallThrough(targetState))
-        {
-            return true;
-        }
-        if ((SOFT_MATERIALS.contains(fallableMaterial) && HARD_MATERIALS.contains(targetState.getMaterial())) || targetState.getBlockHardness(world, pos) == -1.0F)
-        {
-            return false;
-        }
-        if (!world.isSideSolid(pos, EnumFacing.UP))
-        {
-            return true;
+        for(SupportFallablesPair supportFallable : FallableRegistry) {
+            if (BlockFalling.canFallThrough(targetState)) {
+                return true;
+            }
+            if ((supportFallable.SoftMaterials.contains(fallableMaterial) && supportFallable.HardMaterials.contains(targetState.getMaterial())) || targetState.getBlockHardness(world, pos) == -1.0F) {
+                return false;
+            }
+            if (!world.isSideSolid(pos, EnumFacing.UP)) {
+                return true;
+            }
+            return !targetState.isFullBlock();
         }
         return !targetState.isFullBlock();
     }
 
     public static boolean hasSupportingSideBlock(IBlockState state)
     {
-        return state.isNormalCube() || SIDE_SUPPORTS.contains(state) || state.getBlock() instanceof BlockRockVariant && (((BlockRockVariant) state.getBlock()).getType() == Rock.Type.FARMLAND || ((BlockRockVariant) state.getBlock()).getType() == Rock.Type.PATH);
+        return state.isNormalCube();
+        //return state.isNormalCube() || SIDE_SUPPORTS.contains(state) || state.getBlock() instanceof BlockRockVariant && (((BlockRockVariant) state.getBlock()).getType() == Rock.Type.FARMLAND || ((BlockRockVariant) state.getBlock()).getType() == Rock.Type.PATH);
     }
 
     public static boolean shouldFall(World world, BlockPos posToFallFrom, BlockPos originalPos, IBlockState originalState, boolean ignoreSupportChecks)
@@ -216,7 +232,7 @@ public class FallingBlockManager
     @Nullable
     public static BlockPos getFallablePos(World world, BlockPos pos, IBlockState state, boolean ignoreSupportChecks)
     {
-        Specification specification = FALLABLES.get(state);
+        Specification specification = getSpecification(state);
 
         if (specification == null)
         {
@@ -450,7 +466,6 @@ public class FallingBlockManager
         @Nullable private IBeginFallCallback beginFallCallback;
         @Nullable private IEndFallCallback endFallCallback;
 
-        private SupportFallablesPair supportManager;
 
         public Specification(Specification specification)
         {
@@ -462,7 +477,6 @@ public class FallingBlockManager
             this.resultingState = specification.resultingState;
             this.beginFallCallback = specification.beginFallCallback;
             this.endFallCallback = specification.endFallCallback;
-            this.supportManager = specification.supportManager;
         }
 
         public Specification(boolean canFallHorizontally, Supplier<SoundEvent> soundEventDelegate)
@@ -485,7 +499,6 @@ public class FallingBlockManager
             }
             this.soundEventDelegate = soundEventDelegate;
             this.fallDropsProvider = fallDropsProvider;
-            this.supportManager = supportManager;
         }
 
         public void setResultingState(IBlockState state)

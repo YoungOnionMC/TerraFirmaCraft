@@ -32,7 +32,7 @@ public class BlockRockVariantFallable extends BlockRockVariant
         super(type, rock);
         if (type.canFall())
         {
-            FallingBlockManager.registerFallable(this, type.getFallingSpecification());
+            FallingBlockManager.TFCDefaultSupportFallablePair.registerFallable(this, type.getFallingSpecification());
         }
     }
 

@@ -36,7 +36,6 @@ import net.dries007.tfc.objects.blocks.stone.BlockOreTFC;
 
 public class EntityFallingBlockTFC extends EntityFallingBlock implements IEntityAdditionalSpawnData
 {
-
     private FallingBlockManager.Specification currentSpecification; // Server-side only variable
 
     @SideOnly(Side.CLIENT)
@@ -57,7 +56,7 @@ public class EntityFallingBlockTFC extends EntityFallingBlock implements IEntity
         super(world);
         this.currentSpecification = FallingBlockManager.getSpecification(fallingBlockState);
         this.fallTile = fallingBlockState;
-        BlockPos pos = new BlockPos(this);
+        BlockPos pos = new BlockPos(x, y, z);
         if (currentSpecification.getResultingState() == null)
         {
             TileEntity tile = this.world.getTileEntity(pos);

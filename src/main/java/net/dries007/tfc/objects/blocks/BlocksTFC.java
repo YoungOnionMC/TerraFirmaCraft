@@ -10,6 +10,7 @@ import com.google.common.collect.ImmutableList.Builder;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockFlowerPot;
 import net.minecraft.block.BlockGravel;
+import net.minecraft.block.BlockLog;
 import net.minecraft.block.material.MapColor;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
@@ -48,6 +49,7 @@ import net.dries007.tfc.util.agriculture.FruitTree;
 
 import static net.dries007.tfc.TerraFirmaCraft.MOD_ID;
 import static net.dries007.tfc.api.types.Rock.Type.*;
+import static net.dries007.tfc.api.util.FallingBlockManager.Specification.VERTICAL_AND_HORIZONTAL;
 import static net.dries007.tfc.objects.CreativeTabsTFC.*;
 import static net.dries007.tfc.util.Helpers.getNull;
 
@@ -427,12 +429,12 @@ public final class BlocksTFC
                         case RAW:
                             spec = new FallingBlockManager.Specification(spec);
                             spec.setResultingState(BlockRockVariant.get(rock, COBBLE).getDefaultState());
-                            FallingBlockManager.registerFallable(BlockRockVariant.get(rock, RAW), spec);
+                            FallingBlockManager.TFCDefaultSupportFallablePair.registerFallable(BlockRockVariant.get(rock, RAW), spec);
                             break;
                         case SMOOTH:
                             spec = new FallingBlockManager.Specification(spec);
                             spec.setResultingState(BlockRockVariant.get(rock, COBBLE).getDefaultState());
-                            FallingBlockManager.registerFallable(BlockRockVariant.get(rock, SMOOTH).getDefaultState().withProperty(BlockRockSmooth.CAN_FALL, true), spec);
+                            FallingBlockManager.TFCDefaultSupportFallablePair.registerFallable(BlockRockVariant.get(rock, SMOOTH).getDefaultState().withProperty(BlockRockSmooth.CAN_FALL, true), spec);
                             break;
                         default:
                             Rock.Type nonGrassType = type.getNonGrassVersion();
@@ -441,7 +443,7 @@ public final class BlocksTFC
                                 spec = new FallingBlockManager.Specification(spec);
                                 spec.setResultingState(BlockRockVariant.get(rock, nonGrassType).getDefaultState());
                             }
-                            FallingBlockManager.registerFallable(BlockRockVariant.get(rock, type), spec);
+                            FallingBlockManager.TFCDefaultSupportFallablePair.registerFallable(BlockRockVariant.get(rock, type), spec);
                     }
                 }
             }
@@ -495,6 +497,9 @@ public final class BlocksTFC
                 normalItemBlocks.add(new ItemBlockTFC(register(r, "wood/planks/" + wood.getRegistryName().getPath(), new BlockPlanksTFC(wood), CT_WOOD)));
                 // Blocks with specific block collections don't matter
                 logs.add(register(r, "wood/log/" + wood.getRegistryName().getPath(), new BlockLogTFC(wood), CT_WOOD));
+                FallingBlockManager.Specification spec = new FallingBlockManager.Specification(VERTICAL_AND_HORIZONTAL);
+                FallingBlockManager.TtestPair.registerFallable(BlockLogTFC.get(wood), spec);
+
                 leaves.add(register(r, "wood/leaves/" + wood.getRegistryName().getPath(), new BlockLeavesTFC(wood), CT_WOOD));
                 fenceGates.add(register(r, "wood/fence_gate/" + wood.getRegistryName().getPath(), new BlockFenceGateTFC(wood), CT_DECORATIONS));
                 saplings.add(register(r, "wood/sapling/" + wood.getRegistryName().getPath(), new BlockSaplingTFC(wood), CT_WOOD));

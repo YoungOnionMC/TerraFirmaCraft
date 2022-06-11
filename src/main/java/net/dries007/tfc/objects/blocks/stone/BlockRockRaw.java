@@ -41,7 +41,7 @@ public class BlockRockRaw extends BlockRockVariant
         super(type, rock);
 
         FallingBlockManager.Specification spec = new FallingBlockManager.Specification(type.getFallingSpecification()); // Copy as each raw stone has an unique resultingState
-        FallingBlockManager.registerFallable(this, spec);
+        FallingBlockManager.TFCDefaultSupportFallablePair.registerFallable(this, spec);
 
         setDefaultState(getBlockState().getBaseState().withProperty(CAN_FALL, true));
     }
