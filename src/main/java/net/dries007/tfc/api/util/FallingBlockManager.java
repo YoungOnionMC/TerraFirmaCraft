@@ -59,26 +59,30 @@ public class FallingBlockManager
         private Map<IBlockState, Specification> Fallables = new Object2ObjectOpenHashMap<>();
         private Set<IBlockState> SideSupports = new ObjectOpenHashSet<>(0);
 
-        public void registerSoftMaterial(Material material) {SoftMaterials.add(material);}
-        public void registerHardMaterial(Material material) {HardMaterials.add(material);}
+        public void registerSoftMaterial(Material material) { SoftMaterials.add(material); }
+        public void removeSoftMaterial(Material material) { SoftMaterials.remove(material); }
+        public void registerHardMaterial(Material material) { HardMaterials.add(material); }
+        public void removeHardMaterial(Material material) { HardMaterials.remove(material); }
 
         public void registerFallable(IBlockState state, Specification spec) {
             Fallables.put(state, spec);
         }
+        public void removeFallable(IBlockState state) { Fallables.remove(state); }
 
         public void registerFallable(Block block, Specification spec) {
             for(IBlockState state : block.getBlockState().getValidStates()) {
-                Fallables.put(state, spec);
+                    Fallables.put(state, spec);
+                }
             }
-        }
+        public void removeFallable(Block block) { block.getBlockState().getValidStates().forEach(Fallables::remove); }
 
-        public void registerSideSupports(IBlockState state) {
-            SideSupports.add(state);
-        }
+        public void registerSideSupports(IBlockState state) { SideSupports.add(state); }
+        public void removeSideSupport(IBlockState state) { SideSupports.remove(state); }
 
         public void registerSideSupports(Block block) {
             SideSupports.addAll(block.getBlockState().getValidStates());
         }
+        public void removeSideSupport(Block block) { block.getBlockState().getValidStates().forEach(SideSupports::remove); }
 
         public Specification getFallableSpecification(IBlockState state) { return Fallables.get(state);}
 
@@ -86,100 +90,33 @@ public class FallingBlockManager
 
     private static Set<SupportFallablesPair> FallableRegistry = new HashSet<>();
     public static SupportFallablesPair TFCDefaultSupportFallablePair = new SupportFallablesPair("DefaultSupport");
-    public static SupportFallablesPair TtestPair = new SupportFallablesPair("treeshit");
 
     static {
+        TFCDefaultSupportFallablePair.registerSoftMaterial(Material.GROUND);
+        TFCDefaultSupportFallablePair.registerSoftMaterial(Material.SAND);
+        TFCDefaultSupportFallablePair.registerSoftMaterial(Material.GRASS);
+        TFCDefaultSupportFallablePair.registerSoftMaterial(Material.CLAY);
+        TFCDefaultSupportFallablePair.registerHardMaterial(Material.IRON);
+        TFCDefaultSupportFallablePair.registerHardMaterial(BlockCharcoalPile.CHARCOAL_MATERIAL);
         addSupportFallablePairToRegistry(TFCDefaultSupportFallablePair);
-        addSupportFallablePairToRegistry(TtestPair);
     }
 
     public static void addSupportFallablePairToRegistry(SupportFallablesPair supportFallablesPair) {
         FallableRegistry.add(supportFallablesPair);
     }
 
-    //private static final Set<Material> SOFT_MATERIALS = new ObjectOpenHashSet<>(new Material[] { Material.GROUND, Material.SAND, Material.GRASS, Material.CLAY });
-    //private static final Set<Material> HARD_MATERIALS = new ObjectOpenHashSet<>(new Material[] { Material.IRON, BlockCharcoalPile.CHARCOAL_MATERIAL });
-
-    //private static final Map<IBlockState, Specification> FALLABLES = new Object2ObjectOpenHashMap<>();
-
-    //private static final Set<IBlockState> SIDE_SUPPORTS = new ObjectOpenHashSet<>(0);
-    /*
-    public static void registerSoftMaterial(Material material)
-    {
-        SOFT_MATERIALS.add(material);
-    }
-
-    public static void registerHardMaterial(Material material)
-    {
-        HARD_MATERIALS.add(material);
-    }
-
-    public static void registerFallable(IBlockState state, Specification specification)
-    {
-        FALLABLES.put(state, specification);
-    }
-
-    public static void registerFallable(Block block, Specification specification)
-    {
-        for (IBlockState state : block.getBlockState().getValidStates())
-        {
-            FALLABLES.put(state, specification);
-        }
-    }
-
-    public static void registerSideSupports(IBlockState state)
-    {
-        SIDE_SUPPORTS.add(state);
-    }
-
-    public static void registerSideSupports(Block block)
-    {
-        SIDE_SUPPORTS.addAll(block.getBlockState().getValidStates());
-    }
-    */
-    /*
-    public static void removeSoftMaterial(Material material)
-    {
-        SOFT_MATERIALS.remove(material);
-    }
-
-    public static void removeHardMaterial(Material material)
-    {
-        HARD_MATERIALS.remove(material);
-    }
-
-    public static void removeFallable(IBlockState state)
-    {
-        FALLABLES.remove(state);
-    }
-
-    public static void removeFallable(Block block)
-    {
-        block.getBlockState().getValidStates().forEach(FALLABLES::remove);
-    }
-
-    public static void removeSideSupport(IBlockState state)
-    {
-        SIDE_SUPPORTS.remove(state);
-    }
-
-    public static void removeSideSupport(Block block)
-    {
-        block.getBlockState().getValidStates().forEach(SIDE_SUPPORTS::remove);
-    }
-    */
     @Nullable
     public static Specification getSpecification(IBlockState state)
     {
         Specification result = null;
         for(FallingBlockManager.SupportFallablesPair supportSet : FallableRegistry) {
-            if(result != null || supportSet.getFallableSpecification(state) != null)
-               result = supportSet.getFallableSpecification(state);
+            if(result != null || supportSet.getFallableSpecification(state) != null) {
+                result = supportSet.getFallableSpecification(state);
+                return result;
+            }
         }
         return result;
     }
-
-
 
     public static boolean canFallThrough(World world, BlockPos pos, Material fallingBlockMaterial)
     {
@@ -337,7 +274,7 @@ public class FallingBlockManager
                     world.setBlockState(fallablePos, state);
                     world.getGameRules().setOrCreateGameRule("doTileDrops", Boolean.toString(true));
                 }
-                world.spawnEntity(new EntityFallingBlockTFC(world, fallablePos, state)); // check for supportable tiles?
+                world.spawnEntity(new EntityFallingBlockTFC(world, fallablePos, pos, state)); // check for supportable tiles?
                 return true;
             }
         }

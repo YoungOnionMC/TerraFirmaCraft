@@ -16,6 +16,8 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
 
+import net.dries007.tfc.api.recipes.heat.HeatRecipe;
+import net.dries007.tfc.objects.fluids.properties.MetalProperty;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
@@ -170,16 +172,51 @@ public class ItemSmallVessel extends ItemPottery
         if (capItemHandler instanceof ISmallVesselHandler)
         {
             ISmallVesselHandler cap = (ISmallVesselHandler) capItemHandler;
-            Alloy alloy = new Alloy();
 
-            for (int i = 0; i < cap.getSlots(); i++)
-            {
-                alloy.add(cap.getStackInSlot(i), Metal.Tier.TIER_VI, 1600f);
-                cap.setStackInSlot(i, ItemStack.EMPTY);
+            boolean metalsFound = false;
+            for(int i=0; i < cap.getSlots(); i++) {
+                IMetalItem metalObject = CapabilityMetalItem.getMetalItem(cap.getStackInSlot(i));
+                if (metalObject != null)
+                    metalsFound = true;
             }
 
-            cap.setFluidMode(true);
-            cap.fill(new FluidStack(FluidsTFC.getFluidFromMetal(alloy.getResult()), alloy.getAmount()), true);
+            if(metalsFound) {
+                Alloy alloy = new Alloy();
+
+                for (int i = 0; i < cap.getSlots(); i++) {
+                    alloy.add(cap.getStackInSlot(i), Metal.Tier.TIER_VI, 1600f);
+                    cap.setStackInSlot(i, ItemStack.EMPTY);
+                }
+
+                cap.setFluidMode(true);
+
+                cap.fill(new FluidStack(FluidsTFC.getFluidFromMetal(alloy.getResult()), alloy.getAmount()), true);
+            }
+            else {
+                FluidStack fluidStack = null;
+                ItemStack foundItemStack = null;
+                HeatRecipe foundRecipe = null;
+                for (int i = 0; i < cap.getSlots(); i++) {
+                    HeatRecipe recipe = HeatRecipe.get(cap.getStackInSlot(i), Metal.Tier.TIER_VI);
+                    if(recipe != null) {
+                        foundItemStack = cap.getStackInSlot(i);
+                        foundRecipe = recipe;
+                    }
+                }
+
+                if (foundItemStack != null) {
+                    fluidStack = foundRecipe.getOutputFluid(foundItemStack);
+                    if (fluidStack != null) {
+                        fluidStack.amount *= foundItemStack.getCount();
+                    }
+                }
+                for (int i = 0; i < cap.getSlots(); i++) {
+                    cap.setStackInSlot(i, ItemStack.EMPTY);
+                }
+
+                cap.setFluidMode(true);
+                cap.fill(fluidStack, true);
+            }
             cap.setTemperature(1600f);
         }
         return input;
@@ -310,6 +347,11 @@ public class ItemSmallVessel extends ItemPottery
                     }
                 }
 
+                if(fluidMode) {
+                    String desc = TextFormatting.DARK_GREEN + I18n.format(tank.getFluid().getLocalizedName()) + ": " + I18n.format("tfc.tooltip.units", tank.getFluid().amount);
+                    text.add(desc);
+                }
+
                 if (hasContent)
                 {
                     if (onlySmeltables)
@@ -322,11 +364,14 @@ public class ItemSmallVessel extends ItemPottery
                             if (key != null)
                             {
                                 int metalAmount = entry.getValue();
-                                text.add(textPosition, I18n.format(TerraFirmaCraft.MOD_ID + ".tooltip.small_vessel_unit_total", I18n.format(key.getTranslationKey()), metalAmount, Math.round((float) metalAmount / totalAmount * 1000) / 5f));
+                                text.add(textPosition, I18n.format(TerraFirmaCraft.MOD_ID + ".tooltip.small_vessel_unit_total", I18n.format(key.getTranslationKey()), metalAmount, Math.round((float) metalAmount / totalAmount * 1000) / 10f));
                             }
                         }
                         text.add(textPosition, ""); // Separator between the contents of the vessel and the above units text, not needed but I feel that it helps visually
                     }
+
+
+
                 }
                 else
                 {
@@ -340,7 +385,7 @@ public class ItemSmallVessel extends ItemPottery
         @Override
         public Metal getMetal()
         {
-            return fluidMode && tank.getFluid() != null ? FluidsTFC.getMetalFromFluid(tank.getFluid().getFluid()) : null;
+            return fluidMode && tank.getFluid() != null && FluidsTFC.getWrapper(tank.getFluid().getFluid()).get(MetalProperty.METAL) != null ? FluidsTFC.getMetalFromFluid(tank.getFluid().getFluid()) : null;
         }
 
         @Override
@@ -540,12 +585,13 @@ public class ItemSmallVessel extends ItemPottery
             heatCapacity = 1;
             if (fluid != null)
             {
-                Metal metal = FluidsTFC.getMetalFromFluid(fluid.getFluid());
-                //noinspection ConstantConditions
-                if (metal != null)
-                {
-                    meltTemp = metal.getMeltTemp();
-                    heatCapacity = metal.getSpecificHeat();
+                if(FluidsTFC.getWrapper(fluid.getFluid()).get(MetalProperty.METAL) != null) {
+                    Metal metal = FluidsTFC.getMetalFromFluid(fluid.getFluid());
+                    //noinspection ConstantConditions
+                    if (metal != null) {
+                        meltTemp = metal.getMeltTemp();
+                        heatCapacity = metal.getSpecificHeat();
+                    }
                 }
             }
         }

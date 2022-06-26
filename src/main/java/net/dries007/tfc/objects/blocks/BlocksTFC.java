@@ -50,6 +50,7 @@ import net.dries007.tfc.util.agriculture.FruitTree;
 import static net.dries007.tfc.TerraFirmaCraft.MOD_ID;
 import static net.dries007.tfc.api.types.Rock.Type.*;
 import static net.dries007.tfc.api.util.FallingBlockManager.Specification.VERTICAL_AND_HORIZONTAL;
+import static net.dries007.tfc.api.util.FallingBlockManager.Specification.VERTICAL_ONLY;
 import static net.dries007.tfc.objects.CreativeTabsTFC.*;
 import static net.dries007.tfc.util.Helpers.getNull;
 
@@ -497,9 +498,6 @@ public final class BlocksTFC
                 normalItemBlocks.add(new ItemBlockTFC(register(r, "wood/planks/" + wood.getRegistryName().getPath(), new BlockPlanksTFC(wood), CT_WOOD)));
                 // Blocks with specific block collections don't matter
                 logs.add(register(r, "wood/log/" + wood.getRegistryName().getPath(), new BlockLogTFC(wood), CT_WOOD));
-                FallingBlockManager.Specification spec = new FallingBlockManager.Specification(VERTICAL_AND_HORIZONTAL);
-                FallingBlockManager.TtestPair.registerFallable(BlockLogTFC.get(wood), spec);
-
                 leaves.add(register(r, "wood/leaves/" + wood.getRegistryName().getPath(), new BlockLeavesTFC(wood), CT_WOOD));
                 fenceGates.add(register(r, "wood/fence_gate/" + wood.getRegistryName().getPath(), new BlockFenceGateTFC(wood), CT_DECORATIONS));
                 saplings.add(register(r, "wood/sapling/" + wood.getRegistryName().getPath(), new BlockSaplingTFC(wood), CT_WOOD));

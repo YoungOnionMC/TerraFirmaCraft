@@ -63,10 +63,10 @@ file "build.properties" withReader {
 if (System.getenv('VERSION') != null) {
     version = System.getenv('VERSION')
 } else {
-    version = 'dev'
+    version = '1.7.23.181'
 }
 
-group = "net.dries007.tfc" // According to java standards, as I have control over this domain. If you fork this and release your own version, change this.
+group = "net.youngonion.tfc" // According to java standards, as I have control over this domain. If you fork this and release your own version, change this.
 archivesBaseName = "TerraFirmaCraft" // Jar filename. The final result must match ^[\w-\.]+$. (Alphanumerical + `_-.`)
 sourceCompatibility = targetCompatibility = "1.8" // We require Java 8
 

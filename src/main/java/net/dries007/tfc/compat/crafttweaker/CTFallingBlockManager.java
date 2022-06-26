@@ -39,7 +39,10 @@ import static net.dries007.tfc.api.util.FallingBlockManager.getSpecification;
 public class CTFallingBlockManager
 {
 
-
+    @ZenMethod
+    public static void addSupportFallablePairToRegistry(CTSupportFallablePair supportFallablePair) {
+        FallingBlockManager.addSupportFallablePairToRegistry(supportFallablePair.internal);
+    }
 
     @ZenRegister
     @ZenClass("mods.terrafirmacraft.fallingblock.SupportFallablePair")

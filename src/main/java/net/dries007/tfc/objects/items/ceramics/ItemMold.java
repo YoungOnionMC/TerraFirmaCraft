@@ -11,6 +11,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
 
+import net.dries007.tfc.objects.fluids.properties.MetalProperty;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.InventoryCrafting;
@@ -216,16 +217,17 @@ public class ItemMold extends ItemPottery
         {
             if (resource != null)
             {
-                Metal metal = FluidsTFC.getMetalFromFluid(resource.getFluid());
-                //noinspection ConstantConditions
-                if (metal != null && type.hasMold(metal))
-                {
-                    int fillAmount = tank.fill(resource, doFill);
-                    if (fillAmount == tank.getFluidAmount())
-                    {
-                        updateFluidData();
+                MetalProperty prop = FluidsTFC.getWrapper(resource.getFluid()).get(MetalProperty.METAL);
+                if(prop != null) {
+                    Metal metal = prop.getMetal();
+                    //noinspection ConstantConditions
+                    if (metal != null && type.hasMold(metal)) {
+                        int fillAmount = tank.fill(resource, doFill);
+                        if (fillAmount == tank.getFluidAmount()) {
+                            updateFluidData();
+                        }
+                        return fillAmount;
                     }
-                    return fillAmount;
                 }
             }
             return 0;

@@ -46,20 +46,21 @@ public class EntityFallingBlockTFC extends EntityFallingBlock implements IEntity
         super(world);
     }
 
-    public EntityFallingBlockTFC(World world, BlockPos pos, IBlockState fallingBlockState)
+    public EntityFallingBlockTFC(World world, BlockPos pos, BlockPos newPos, IBlockState fallingBlockState)
     {
-        this(world, pos.getX(), pos.getY(), pos.getZ(), fallingBlockState);
+        this(world, pos.getX(), pos.getY(), pos.getZ(), newPos.getX(), newPos.getY(), newPos.getZ(), fallingBlockState);
     }
 
-    public EntityFallingBlockTFC(World world, double x, double y, double z, IBlockState fallingBlockState)
+    public EntityFallingBlockTFC(World world, double x1, double y1, double z1, double x2, double y2, double z2, IBlockState fallingBlockState)
     {
         super(world);
         this.currentSpecification = FallingBlockManager.getSpecification(fallingBlockState);
         this.fallTile = fallingBlockState;
-        BlockPos pos = new BlockPos(x, y, z);
-        if (currentSpecification.getResultingState() == null)
+        BlockPos pos = new BlockPos(x1, y1, z1);
+        BlockPos pos2 = new BlockPos(x2, y2, z2);
+        if (currentSpecification.getResultingState() == null && this.tileEntityData == null)
         {
-            TileEntity tile = this.world.getTileEntity(pos);
+            TileEntity tile = this.world.getTileEntity(pos2);
             if (tile != null)
             {
                 this.tileEntityData = tile.serializeNBT(); // Original EntityFallingBlock doesn't even save tile entity data... what...
@@ -67,13 +68,13 @@ public class EntityFallingBlockTFC extends EntityFallingBlock implements IEntity
         }
         this.preventEntitySpawning = true;
         this.setSize(0.98F, 0.98F);
-        this.setPosition(x + 0.5f, y + (double) ((1.0F - height) / 2.0F), z + 0.5f);
+        this.setPosition(x1 + 0.5f, y1 + (double) ((1.0F - height) / 2.0F), z1 + 0.5f);
         this.motionX = 0.0D;
         this.motionY = 0.0D;
         this.motionZ = 0.0D;
-        this.prevPosX = x;
-        this.prevPosY = y;
-        this.prevPosZ = z;
+        this.prevPosX = x1;
+        this.prevPosY = y1;
+        this.prevPosZ = z1;
         this.setOrigin(pos);
     }
 
