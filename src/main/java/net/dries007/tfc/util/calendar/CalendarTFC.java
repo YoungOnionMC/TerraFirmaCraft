@@ -99,6 +99,7 @@ public final class CalendarTFC implements INBTSerializable<NBTTagCompound>
     }
 
     private long playerTime, calendarTime;
+    private float tickCount;
     private int daysInMonth;
     private boolean doDaylightCycle, arePlayersLoggedOn;
     private MinecraftServer server;
@@ -109,6 +110,7 @@ public final class CalendarTFC implements INBTSerializable<NBTTagCompound>
         daysInMonth = ConfigTFC.General.MISC.defaultMonthLength;
         playerTime = 0;
         calendarTime = (5 * daysInMonth * ICalendar.TICKS_IN_DAY) + (6 * ICalendar.TICKS_IN_HOUR);
+        tickCount = ICalendar.TICKS_IN_DAY / 24000;
         doDaylightCycle = true;
         arePlayersLoggedOn = false;
     }
@@ -258,11 +260,16 @@ public final class CalendarTFC implements INBTSerializable<NBTTagCompound>
      */
     public void onOverworldTick(World world)
     {
-        if (doDaylightCycle && arePlayersLoggedOn)
+        tickCount--;
+        long worldTime = world.getWorldTime();
+
+        long calenderWorldTime = CALENDAR_TIME.getWorldTime();
+        if (doDaylightCycle && arePlayersLoggedOn && tickCount == 0)
         {
             calendarTime++;
+            tickCount = ICalendar.TICKS_IN_DAY / 24000;
         }
-        long deltaWorldTime = (world.getWorldTime() % ICalendar.TICKS_IN_DAY) - CALENDAR_TIME.getWorldTime();
+        long deltaWorldTime = (worldTime % ICalendar.TICKS_IN_DAY) - calenderWorldTime;
         if (deltaWorldTime > 1 || deltaWorldTime < -1)
         {
             TerraFirmaCraft.getLog().info("World time and Calendar Time are out of sync! Trying to fix...");
@@ -279,7 +286,7 @@ public final class CalendarTFC implements INBTSerializable<NBTTagCompound>
             if (deltaWorldTime < 0)
             {
                 // Calendar is ahead, so jump world time
-                world.setWorldTime(world.getWorldTime() - deltaWorldTime);
+                world.setWorldTime(worldTime - deltaWorldTime);
                 TerraFirmaCraft.getLog().info("Calendar is ahead by {} ticks, jumping world time to catch up", -deltaWorldTime);
             }
             else
