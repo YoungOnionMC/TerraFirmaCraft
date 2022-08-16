@@ -10,8 +10,10 @@ package net.dries007.tfc.util.calendar;
  */
 public interface ICalendar
 {
+    int TICK_MULTIPLIER = 3;
+
     /* Constants */
-    int TICKS_IN_HOUR = 3000;
+    int TICKS_IN_HOUR = 1000 * TICK_MULTIPLIER;
     int HOURS_IN_DAY = 24;
     int TICKS_IN_DAY = TICKS_IN_HOUR * HOURS_IN_DAY;
     /* This needs to be a float, otherwise there are ~62 minutes per hour */

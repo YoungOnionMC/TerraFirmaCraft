@@ -113,7 +113,7 @@ public class CommandTimeTFC extends CommandBase
                 }
                 else if ("daytime".equals(args[1]))
                 {
-                    int daytime = (int) (sender.getEntityWorld().getWorldTime() % ICalendar.TICKS_IN_DAY);
+                    int daytime = (int) (sender.getEntityWorld().getWorldTime() % (ICalendar.TICKS_IN_DAY / ICalendar.TICK_MULTIPLIER));
                     sender.setCommandStat(CommandResultStats.Type.QUERY_RESULT, daytime);
                     notifyCommandListener(sender, this, "tfc.command.timetfc.query_daytime", daytime);
                 }
@@ -193,10 +193,10 @@ public class CommandTimeTFC extends CommandBase
         // Update the actual world times
         for (World world : server.worlds)
         {
-            long worldTimeJump = worldTime - (world.getWorldTime() % ICalendar.TICKS_IN_DAY);
+            long worldTimeJump = worldTime - (world.getWorldTime() % (ICalendar.TICKS_IN_DAY / ICalendar.TICK_MULTIPLIER));
             if (worldTimeJump < 0)
             {
-                worldTimeJump += ICalendar.TICKS_IN_DAY;
+                worldTimeJump += ICalendar.TICKS_IN_DAY / ICalendar.TICK_MULTIPLIER;
             }
             world.setWorldTime(world.getWorldTime() + worldTimeJump);
         }

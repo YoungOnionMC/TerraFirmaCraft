@@ -267,7 +267,7 @@ public final class CalendarTFC implements INBTSerializable<NBTTagCompound>
         if (doDaylightCycle && arePlayersLoggedOn && tickCount == 0)
         {
             calendarTime++;
-            tickCount = ICalendar.TICKS_IN_DAY / 24000;
+            tickCount = ICalendar.TICK_MULTIPLIER;
         }
         long deltaWorldTime = (worldTime % ICalendar.TICKS_IN_DAY) - calenderWorldTime;
         if (deltaWorldTime > 1 || deltaWorldTime < -1)
