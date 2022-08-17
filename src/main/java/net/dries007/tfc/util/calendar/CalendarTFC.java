@@ -110,7 +110,7 @@ public final class CalendarTFC implements INBTSerializable<NBTTagCompound>
         daysInMonth = ConfigTFC.General.MISC.defaultMonthLength;
         playerTime = 0;
         calendarTime = (5 * daysInMonth * ICalendar.TICKS_IN_DAY) + (6 * ICalendar.TICKS_IN_HOUR);
-        tickCount = ICalendar.TICKS_IN_DAY / 24000;
+        tickCount = 1.0f;
         doDaylightCycle = true;
         arePlayersLoggedOn = false;
     }
@@ -260,14 +260,14 @@ public final class CalendarTFC implements INBTSerializable<NBTTagCompound>
      */
     public void onOverworldTick(World world)
     {
-        tickCount--;
+        tickCount -= 1.0f;
         long worldTime = world.getWorldTime();
 
         long calenderWorldTime = CALENDAR_TIME.getWorldTime();
-        if (doDaylightCycle && arePlayersLoggedOn && tickCount == 0)
+        if (doDaylightCycle && arePlayersLoggedOn && tickCount <= 0)
         {
             calendarTime++;
-            tickCount = ICalendar.TICK_MULTIPLIER;
+            tickCount += ICalendar.TICK_MULTIPLIER;
         }
         long deltaWorldTime = (worldTime % ICalendar.TICKS_IN_DAY) - calenderWorldTime;
         if (deltaWorldTime > 1 || deltaWorldTime < -1)

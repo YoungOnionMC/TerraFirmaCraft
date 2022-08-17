@@ -193,7 +193,7 @@ public class CommandTimeTFC extends CommandBase
         // Update the actual world times
         for (World world : server.worlds)
         {
-            long worldTimeJump = worldTime - (world.getWorldTime() % (ICalendar.TICKS_IN_DAY / ICalendar.TICK_MULTIPLIER));
+            long worldTimeJump = worldTime - (world.getWorldTime() % (int)((float)ICalendar.TICKS_IN_DAY / ICalendar.TICK_MULTIPLIER));
             if (worldTimeJump < 0)
             {
                 worldTimeJump += ICalendar.TICKS_IN_DAY / ICalendar.TICK_MULTIPLIER;
